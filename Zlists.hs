@@ -28,6 +28,11 @@ module Zmodules.Zlists
 , isSuffixOf'
 , elem'
 , notElem'
+, partition'
+, find'
+, elemIndex'
+, gotoIndex'
+, elemIndices'
 ) where
 
 head' :: [a] -> a
@@ -152,3 +157,46 @@ elem' needle (x:haystack)
 
 notElem' :: (Eq a) => a -> [a] -> Bool
 notElem' needle haystack = not . elem' needle $ haystack
+
+partition' :: (a -> Bool) -> [a] -> ([a], [a])
+partition' _ [] = ([], [])
+partition' f (x:xs)
+  | pred == True = (x:a, b)
+  | pred == False = (a, x:b)
+  where (a, b) = partition' f xs
+        pred = f x
+
+find' :: (a -> Bool) -> [a] -> Maybe a
+find' _ [] = Nothing
+find' f (x:xs) = case f x of True -> Just x
+                             False -> find' f xs
+
+-- | get index --
+
+elemIndex'' :: (Eq a) => a -> [a] -> Int -> Maybe Int
+elemIndex'' _ [] _ = Nothing
+elemIndex'' needle (h:haystack) idx
+  | h == needle = Just idx
+  | otherwise = elemIndex'' needle haystack (idx + 1) 
+
+elemIndex' :: (Eq a) => a -> [a] -> Maybe Int
+elemIndex' _ [] = Nothing
+elemIndex' needle haystack = elemIndex'' needle haystack 0
+
+-- | goto certain index -- 
+
+gotoIndex' :: Int -> [a] -> [a]
+gotoIndex' _ [] = []
+gotoIndex' 0 (x:xs) = xs
+gotoIndex' idx (x:xs) = gotoIndex' (idx - 1) xs
+
+-- | Find a list of index --
+
+elemIndices'' :: (Eq a) => a -> Int -> [a] -> [Int]
+elemIndices'' _ _ [] = []
+elemIndices'' needle index (h:haystack)
+  | needle == h = index : elemIndices'' needle (index + 1) haystack
+  | otherwise = elemIndices'' needle (index + 1) haystack
+
+elemIndices' :: (Eq a) => a ->  [a] -> [Int]
+elemIndices' needle haystack = elemIndices'' needle 0 haystack 
