@@ -41,6 +41,8 @@ module Zmodules.Zlists
 , unlines'
 , words'
 , unwords'
+, nub'
+, eraseAll'
 ) where
 
 head' :: [a] -> a
@@ -256,3 +258,13 @@ words' xs = takeWhile' (\x -> x /= '\n' && x /= '\t' && x /= ' ') xs : words' (d
 unwords' :: [String] -> String
 unwords' [] = []
 unwords' (x:xs) = x ++ " " ++ unwords' xs
+
+eraseAll' :: (Eq a) => a -> [a] -> [a]
+eraseAll' _ [] = []
+eraseAll' needle (h:haystack)
+  | needle == h = eraseAll' needle haystack
+  | otherwise = h : eraseAll' needle haystack
+
+nub' :: (Eq a) => [a] -> [a]
+nub' [] = []
+nub' (x:xs) = x : nub' (eraseAll' x xs)
