@@ -38,6 +38,9 @@ module Zmodules.Zlists
 , zipWith3'
 , zip4'
 , lines'
+, unlines'
+, words'
+, unwords'
 ) where
 
 head' :: [a] -> a
@@ -233,3 +236,23 @@ lines' xs = takeWhile' (\x -> x /= '\n') xs : lines' (dropWhile'' xs '\n')
           dropWhile'' (x:xs) c
             | c == x = xs
             | otherwise = dropWhile'' xs c
+
+unlines' :: [String] -> String
+unlines' [] = []
+unlines' (x:xs) = x ++ "\n" ++ unlines xs
+
+words' :: String -> [String]
+words' [] = []
+words' xs = takeWhile' (\x -> x /= '\n' && x /= '\t' && x /= ' ') xs : words' (dropWhile'' xs)
+    where dropWhile'' [] = []
+          dropWhile'' (x:xs)
+            | x == '\n' || x == '\t' || x == ' ' = goto'' xs
+            | otherwise = dropWhile'' xs
+          goto'' [] = []
+          goto'' (x:xs)
+            | x == '\n' || x == '\t' || x == ' ' = goto'' xs
+            | otherwise = (x:xs)
+
+unwords' :: [String] -> String
+unwords' [] = []
+unwords' (x:xs) = x ++ " " ++ unwords' xs
