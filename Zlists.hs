@@ -45,6 +45,9 @@ module Zmodules.Zlists
 , eraseAll'
 , delete'
 , diff'
+, union'
+, intersec'
+, insert'
 ) where
 
 head' :: [a] -> a
@@ -280,3 +283,22 @@ delete' needle (h:haystack)
 diff' :: (Eq a) => [a] -> [a] -> [a]
 diff' xs (y:ys) = diff' (delete' y xs) ys
 diff' xs [] = xs
+
+union' :: (Eq a) => [a] -> [a] -> [a]
+union' xs ys = xs ++ union'' xs ys
+    where union'' _ [] = []
+          union'' xs (y:ys)
+            | find' (\x -> x == y) xs == Nothing = y : union'' xs ys
+            | otherwise = union'' xs ys
+
+intersec' :: (Eq a) => [a] -> [a] -> [a]
+intersec' (x:xs) ys
+  | find' (\y -> y == x) ys == Nothing = intersec' xs ys
+  | otherwise = x : intersec' xs ys
+intersec' [] _ = []
+
+insert' :: (Ord a) => a -> [a] -> [a]
+insert' needle [] = needle : []
+insert' needle (h:haystack)
+  | needle < h = needle : h : haystack
+  | otherwise = h : insert' needle haystack
