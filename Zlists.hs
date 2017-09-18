@@ -43,6 +43,7 @@ module Zmodules.Zlists
 , unwords'
 , nub'
 , eraseAll'
+, delete'
 ) where
 
 head' :: [a] -> a
@@ -268,3 +269,16 @@ eraseAll' needle (h:haystack)
 nub' :: (Eq a) => [a] -> [a]
 nub' [] = []
 nub' (x:xs) = x : nub' (eraseAll' x xs)
+
+delete' :: (Eq a) => a -> [a] -> [a]
+delete' _ [] = []
+delete' needle haystack = delete'' idx haystack
+    where idx = find'' needle 0 haystack
+          find'' _ _ [] = -1
+          find'' needle idx (h:haystack)
+            | needle == h = idx
+            | otherwise = find'' needle (idx + 1) haystack
+          delete'' _ [] = []
+          delete'' idx (h:haystack)
+            | idx == 0 = delete'' (-1) haystack
+            | otherwise = h : delete'' (idx - 1) haystack
