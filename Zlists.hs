@@ -33,6 +33,8 @@ module Zmodules.Zlists
 , elemIndex'
 , gotoIndex'
 , elemIndices'
+, findIndex'
+, findIndices'
 ) where
 
 head' :: [a] -> a
@@ -173,15 +175,13 @@ find' f (x:xs) = case f x of True -> Just x
 
 -- | get index --
 
-elemIndex'' :: (Eq a) => a -> [a] -> Int -> Maybe Int
-elemIndex'' _ [] _ = Nothing
-elemIndex'' needle (h:haystack) idx
-  | h == needle = Just idx
-  | otherwise = elemIndex'' needle haystack (idx + 1) 
-
 elemIndex' :: (Eq a) => a -> [a] -> Maybe Int
 elemIndex' _ [] = Nothing
 elemIndex' needle haystack = elemIndex'' needle haystack 0
+    where elemIndex'' _ [] _ = Nothing
+          elemIndex'' needle (h:haystack) idx
+            | h == needle = Just idx
+            | otherwise = elemIndex'' needle haystack (idx + 1)
 
 -- | goto certain index -- 
 
@@ -199,4 +199,18 @@ elemIndices'' needle index (h:haystack)
   | otherwise = elemIndices'' needle (index + 1) haystack
 
 elemIndices' :: (Eq a) => a ->  [a] -> [Int]
-elemIndices' needle haystack = elemIndices'' needle 0 haystack 
+elemIndices' needle haystack = elemIndices'' needle 0 haystack
+
+findIndex' :: (a -> Bool) -> [a] -> Maybe Int
+findIndex' f xs = findIndex'' f xs 0
+    where findIndex'' _ [] _ = Nothing
+          findIndex'' f (x:xs) idx
+            | f x == True = Just idx
+            | otherwise = findIndex'' f xs (idx + 1)
+
+findIndices' :: (a -> Bool) -> [a] -> [Int]
+findIndices' f xs = findIndices'' f xs 0
+    where findIndices'' _ [] _ = []
+          findIndices'' f (x:xs) idx
+            | f x = idx : findIndices'' f xs (idx + 1)
+            | otherwise = findIndices'' f xs (idx + 1)
