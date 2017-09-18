@@ -35,6 +35,9 @@ module Zmodules.Zlists
 , elemIndices'
 , findIndex'
 , findIndices'
+, zipWith3'
+, zip4'
+, lines'
 ) where
 
 head' :: [a] -> a
@@ -214,3 +217,19 @@ findIndices' f xs = findIndices'' f xs 0
           findIndices'' f (x:xs) idx
             | f x = idx : findIndices'' f xs (idx + 1)
             | otherwise = findIndices'' f xs (idx + 1)
+
+zipWith3' :: (a -> a -> a -> b) -> [a] -> [a] -> [a] -> [b]
+zipWith3' f (x:xs) (y:ys) (z:zs) = f x y z : zipWith3 f xs ys zs
+zipWith3' _ _ _ _ = []
+
+zip4' :: [a] -> [b] -> [c] -> [d] -> [(a, b, c, d)]
+zip4' (w:ws) (x:xs) (y:ys) (z:zs) = (w, x, y, z) : zip4' ws xs ys zs
+zip4' _ _ _ _ = []
+
+lines' :: String -> [String]
+lines' [] = []
+lines' xs = takeWhile' (\x -> x /= '\n') xs : lines' (dropWhile'' xs '\n')
+    where dropWhile'' [] _ = []
+          dropWhile'' (x:xs) c
+            | c == x = xs
+            | otherwise = dropWhile'' xs c
